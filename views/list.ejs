@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Restaurant</title>
+	</head>
+<body>
+<div class="w3-container w3-half w3-margin-top">
+
+  <form action="upload" method="get" class="w3-container w3-card-4">
+  <p>
+  <button class="w3-label w3-section w3-teal w3-ripple"> Create New Restaurnat</button></p>
+</form>
+</div>
+<% if (albert.length > 0) { %>
+<div class= "container-fluid">
+<div class= "row">
+<table>
+<th>
+<tr>
+ <th>Name</th>
+ </tr>
+</th>
+<tbody>
+<% for (var i=0; i < albert.length; i++) { %>
+  <tr>
+  <td><%= albert[i].name %></td>
+  </tr>
+<% } %>
+</tbody>
+</table> 
+</div>
+</div>
+<% } else { %>
+    <h1> Nothing to Show!</h1>
+<% } %>
+</body>
+</html>
