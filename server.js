@@ -5,7 +5,7 @@ const formidable = require('formidable');
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const ObjectID = require('mongodb').ObjectID;
-const mongourl = 'mongodb+srv://rso:alpha8298@testtut3-ki0gi.mongodb.net/test?retryWrites=true&w=majority';
+const mongourl = 'mongodb+srv://albert:albertlai@s12117948-nxlom.azure.mongodb.net/test?retryWrites=true&w=majority';
 const dbName = 'Project';
 app.set('view engine', 'ejs');
 
@@ -39,7 +39,6 @@ app.get('/createac', function(req,res) {
     res.render('createac');
 });
 
-
 app.get('/upload',(req,res) => {
     res.render('upload');
 });
@@ -48,12 +47,9 @@ app.get('/rate',(req,res) => {
     res.render('rate');
 });
 
-
-
 app.get('/update',(req,res) => {
     res.render('update');
 });
-
 
 
 app.get('/delete',(req,res) => {
@@ -62,21 +58,21 @@ app.get('/delete',(req,res) => {
 
 
 //get the list page
-var doc = [];
+
 app.get('/list',(req,res) => {
  const client = new MongoClient(mongourl);
        client.connect((err) => {
        assert.equal(null,err);
        console.log("Connected successfully to mongodb server");
-            const db = client.db(dbName);
-   let cursor = db.collection('albert').find({});
-        cursor.forEach((doc) => {        
-        console.log(JSON.stringify(doc));
-        client.close(); 
-    });
-    res.render('list', {albert : doc});         
- });
+       const db = client.db(dbName);
+         let cursor = db.collection('restaurant').find({});
+         cursor.toArray((err,doc) => {
+         console.log(`No. of document to render : ${doc.length}`)
+         res.render('list', {restaurant : doc});         
+   });
+  });
 });
+
 
 app.get('/upload',(req,res) => {
     res.render('upload');
@@ -106,34 +102,40 @@ app.post('/upload', function(req,res){
             assert.equal(null,err);
             console.log("Connected successfully to mongodb server");
             const db = client.db(dbName);
-            db.collection('albert').insertOne(restaurant,(err, result) => {
+            db.collection('restaurant').insertOne(restaurant,(err, result) => {
                 assert.equal(err, null);
                 console.log("1 document inserted.");
                 client.close();
             });
         });
     });
-   res.render('display');
+   res.render('restaurant?_id="restaurant[i].ObjectId"');
 });
 
 
+app.get('restaurant', (rq,res) => {
+   res.render('restaurant');
+});
+
 //Display the restaurant record
-app.post('/display', function(req,res){
+app.post('/restaurant',(req,res) => {
      const client = new MongoClient(mongourl);
      client.connect((err) => {
      assert.equal(null.err);
      console.log("Connected successfully to mongodb server");
      const db = client.db(dbName);
-     var id = new require('mongodb').ObjectID('5de451645a04066677da1a84');
-     db.collection("albert").findOne({'_id': id }),(err, result) => {
-       res.render("display.ejs",{name:result});  
-        assert.equal(err,null);
-
-         console.log("1 document found.");
-         client.close();
-       };
-      });
-  });
+     let cursor = db.collection('restaurant').find({'_id' : "restaurant[i].ObjectId"});
+         if (req.headers.accept == 'application/json'){    
+         res.json(cursor);
+         } else { 
+         cursor.toArray((err,doc) => {
+         console.log(`No. of document to render : ${doc.length}`)
+         console.log(req.headers.accept);
+         res.render('restaurant?_id="restaurant[i].ObjectId"', {restaurant : doc});         
+    });
+   }
+ });
+});   
 
 
 //Create user Account
